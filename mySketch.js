@@ -380,44 +380,36 @@ function getPointsMat(elevMap, waterElevMap) {
 }`
 //tono
 const fs = `
-	uniform sampler2D colorTexture;
-	//uniform sampler2D lightsTexture; //3 afairo
-  uniform float waterLevel;//prosthesa
-  uniform sampler2D waterElevTexture; //
+  uniform sampler2D colorTexture;
+  uniform float waterLevel;
+  uniform sampler2D waterElevTexture;
 
-	varying vec2 vUv;
-	varying float vVisible;
-	varying float vElevation;
-  
+  varying vec2 vUv;
+  varying float vVisible;
+  varying float vElevation;
  
 
 
-	void main() {
-		vec4 baseColor = texture2D(colorTexture, vUv);
-
+  void main() {
+    vec4 baseColor = texture2D(colorTexture, vUv);
     
-    // neo
     if (vElevation < waterLevel) {
-        vec3 waterColor = vec3(0.05, 0.2, 0.9);
+        vec3 waterColor = vec3(0.55, 0.52, 0.9);
         float depth = smoothstep(waterLevel, waterLevel - 0.15, vElevation);
         vec3 col = mix(waterColor, baseColor.rgb, depth);
         gl_FragColor = vec4(col, 1.0);
         return;
     }
    
-    //vec4 lights = texture2D(lightsTexture, vUv); // 3 afairo
-		//baseColor += lights; //2 afairo
-		
-		// simple elevation-based brightness tweak suggested by chatGPT
-		float shade = mix(0.7, 1.3, vElevation); // valleys darker, mountains lighter
-		shade = clamp(shade, 0.6, 1.4);
+    
+    float shade = mix(0.7, 1.3, vElevation); // valleys darker, mountains lighter
+    shade = clamp(shade, 0.6, 1.4);
 
-		vec3 finalColor = baseColor.rgb * shade;
+    vec3 finalColor = baseColor.rgb * shade;
 
-		// discard invisible backfaces
-		if (vVisible < 0.5) discard;
+    if (vVisible < 0.5) discard;
 
-		gl_FragColor = vec4(finalColor, baseColor.a);
+    gl_FragColor = vec4(finalColor, baseColor.a);
 }
 `
  const pointsMat = new THREE.ShaderMaterial({

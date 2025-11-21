@@ -1,30 +1,8 @@
-/* Created for #WCCChallenge "Earth"
-
-For this challenge I decided to try learning a little bit about THREE.js.
-I have to say I am really impressed at the ability to texture all of the nodes on the icosahedron 
-with high detail level. 
-
-The sketch is, in large part, from Robot Bobby's earth and vertex-earth youtube tutorials. 
-I have substituted free images from the NASA visible earth website and added a modified starfield.
-You can adjust the height of the terrain by adjusting the multiplier on line 157. I have it set to create
+/*You can adjust the height of the terrain by adjusting the multiplier on line 157. I have it set to create
 a subtle effect, but you can crank it up by changing from 0.05 to a higher value.
 
 I haved aded the lights on top of the earth image. To see the earth with just lights use lines 61-68 and 
 comment out 70-76, 152, 185, 193 and set useLights = true
-
-References: 
-Hitchhiker's Guide to the Galaxy by Douglas Adams
-Robot Bobby youtube channel: https://www.youtube.com/@robotbobby9/videos
-ttps://github.com/bobbyroe/threejs-earth
-https://github.com/bobbyroe/vertex-earth
-Project Someday's "Earth" sketch https://openprocessing.org/sketch/2634514
-https://threejs.org/manual/#en/primitives
-
-Images from https://visibleearth.nasa.gov
-Earth: https://visibleearth.nasa.gov/images/74218/december-blue-marble-next-generation
-Topo: https://visibleearth.nasa.gov/images/73934/topography
-Earth lights: https://visibleearth.nasa.gov/images/55167/earths-city-lights
-
 */
 
 let renderer, scene, camera, texture, orbitControls;
@@ -36,28 +14,21 @@ let elevMult; // parameter that controls height of terrain
 let exploding = false;
 let cloudMesh;
 
-
-
-
 function setup() {
 	canvas = document.getElementById("threeCanvas");
   //threeCanvas = createCanvas(windowWidth, windowHeight, WEBGL); // don't want to do this!
 	
   const heightSlider = document.getElementById("heightSlider");
   heightSlider.addEventListener("input", (e) => {
-    if (uniforms) uniforms.elevMult.value = parseFloat(e.target.value);
+    if (uniforms) uniforms.elevMult.value = parseFloat(e.target.value);//auto elegxetai apo to slider
   });
  /*
   document.getElementById("cloudSlider").addEventListener("input", (e) => {
     cloudUniforms.cloudLevel.value = parseFloat(e.target.value);
   });*/
-  document.getElementById("waterSlider").addEventListener("input", e => {
-    uniforms.waterLevel.value = parseFloat(e.target.value);
+  document.getElementById("waterSlider").addEventListener("input", e => {//auto en to slider 
+    uniforms.waterLevel.value = parseFloat(e.target.value);//auto elegxei to nero
   });
-
-  
-
-
 
   // Set up Three.js renderer
   renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true});
@@ -77,6 +48,8 @@ function setup() {
   camera.position.z = 2;
 
   orbitControls = new THREE.OrbitControls(camera, renderer.domElement);
+  orbitControls.minDistance = 2;   // can’t get closer===================================
+  orbitControls.maxDistance = 4;   // can’t zoom out more================================
   orbitControls.enableDamping = true;
   orbitControls.dampingFactor = 0.1;
 
@@ -96,10 +69,11 @@ function setup() {
 	//lightsMap = textureLoader.load(
   //  "./earth_lights_lrg.jpg"); // 4 afairo
 	elevMap = textureLoader.load(
-    "./srtm_ramp2.worldx294x196.jpg"
+    "./srtm_ramp2.world.1350x675.jpg"
   );
 	
   const waterElevMap = textureLoader.load("./inverted-elevation-world-map.jpg");
+  
 	// Add Earth geometry
   const earthGroup = new THREE.Group();
   // earthGroup.rotation.z = -23.4 * Math.PI / 180;
@@ -114,30 +88,31 @@ function setup() {
   const earthMesh = new THREE.Mesh(geometry, mat);
   earthGroup.add(earthMesh)
 
-  const pointsGeo = new THREE.IcosahedronGeometry(1, detail);
+  const pointsGeo = new THREE.IcosahedronGeometry(1, detail);//auto ruthmizei to terrain
 	const pointsMat = getPointsMat(elevMap, waterElevMap)
   const points = new THREE.Points(pointsGeo, pointsMat);
   earthGroup.add(points)
 
   // Add clouds layer - feugei
-  /*
+  
   const cloudTexture = new THREE.TextureLoader().load("cloud_combined_2048.jpg");
-    const cloudGeo = new THREE.SphereGeometry(1.01, 64, 64);
+    const cloudGeo = new THREE.SphereGeometry(1.08, 64, 64);//auta einai ta sunnefa poso apexoun kai ti diametro exoun
     const cloudMat = new THREE.MeshPhongMaterial({
       map: cloudTexture,
       transparent: true,
-      opacity: 0.7, //fainontai ligo ta sunnefakia
-      alphaTest: 0.05
+      opacity: 0.5, //fainontai ligo ta sunnefakia
+     // alphaTest: 0.05
     });
     const cloudMesh = new THREE.Mesh(cloudGeo, cloudMat);
     earthGroup.add(cloudMesh);
-    */
+    
     //oxi edw
 
 /*---------------------------------------------------------------------*/
 
 // --- PROCEDURAL CLOUDS (shader) ----------------------------------
-
+//AISXOSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS//
+/*
 let cloudUniforms = {
     cloudLevel: { value: 0.3 },
     time: { value: 0.0 }
@@ -231,7 +206,7 @@ const cloudMat = new THREE.ShaderMaterial({
 cloudMesh = new THREE.Mesh(cloudGeo, cloudMat);
 earthGroup.add(cloudMesh);
 
-
+*/
 /*---------------------------------------------------------------------*/
 
 	
@@ -255,30 +230,10 @@ earthGroup.add(glowMesh);
 
 
   //o xristos kai h panagia
-  /*const sphereGeometry = new THREE.SphereGeometry(0.1, 24, 10);
-	const sphereMaterial = new THREE.MeshPhongMaterial({ color: 0xfffffff });
-	
-   for (let i = 0; i < 1000; i++) {
-     const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
-     const radius = Math.random() * 25 + 25;
-     const u = Math.random();
-     const v = Math.random();
-     const theta = 2 * Math.PI * u;
-     const phi = Math.acos(2 * v - 1);
-     let x = radius * Math.sin(phi) * Math.cos(theta);
-     let y = radius * Math.sin(phi) * Math.sin(theta);
-     let z = radius * Math.cos(phi);
-     sphere.position.set(
-       x,
-       y,
-       z
-     );
-     scene.add(sphere);
-   }*/
 
 
     // --- STARFIELD (FAST POINTS) ----------------------------------
-const starCount = 5000;
+const starCount = 1500;
 const starGeometry = new THREE.BufferGeometry();
 const positions = new Float32Array(starCount * 3);
 
@@ -315,7 +270,7 @@ scene.add(starField);
     earthGroup.rotation.y += 0.0005; // animation gets a little pixalated with rotation
      
     //cloudUniforms.time.value += 0.01;  // drifting clouds
-   // cloudMesh.rotation.y += 0.0005; // gentle cloud rotation
+    cloudMesh.rotation.y += 0.0004; // gentle cloud rotation
 		
     renderer.render(scene, camera);
     orbitControls.update();
@@ -326,97 +281,116 @@ scene.add(starField);
 function getPointsMat(elevMap, waterElevMap) {
 	 uniforms = {
     size: { type: "f", value: 4.0 },
-		elevMult: { type: "f", value: 0.05 },
+		elevMult: { type: "f", value: 0 },
     colorTexture: { type: "t", value: colorMap},
-		//lightsTexture: { type: "t", value: lightsMap }, //1 afairo
-    elevTexture: { type: "t", value: elevMap }, //terrain einai 
+		//lightsTexture: { type: "t", value: lightsMap }, //mpoulo
+    elevTexture: { type: "t", value: elevMap }, //=========================terrain einai 
     
     waterElevTexture: { type: "t", value: waterElevMap },//kai auto gia nero
-    waterLevel: { type: "f", value: 0.5 },   //evala auto  gia nero
+    waterLevel: { type: "f", value: 0},   //evala auto  gia nero
   };
-	const vs = `//tono
+const vs = `//edw tono
 	uniform float size;
-	uniform float elevMult;
+	uniform float elevMult; //multiplier for terrain displacement.controlled by the terrain height slider
   uniform sampler2D elevTexture;
-  uniform float cloudLevel;
-  uniform float waterLevel;
-  
 
-  varying vec2 vUv;
-  varying float vVisible;
-  varying float vElevation;
+//  uniform float cloudLevel;
+ // uniform float waterLevel;
   
+  varying vec2 vUv;
+ // varying float vVisible;
+  varying float vElevation;
 
   void main() {
 		vUv = uv;
-
-		// sample elevation map
-		//float elv = texture2D(elevTexture, vUv).r;
+/*MPOULO
+		// elevation map
     vec3 e = texture2D(elevTexture, vUv).rgb;
+    float elv =
+        -1.0 * e.r +      // red = deep ocean
+        0.5 * e.g +      // green = medium
+        1.2 * e.b;       // blue = mountain
 
-      // map colors to height antikathisto to panw
-      float elv =
-          -1.0 * e.r +      // red = deep ocean
-          0.5 * e.g +      // green = medium
-          1.2 * e.b;       // blue = mountain
-
-      elv = (elv + 1.0) * 0.5;   // normalize 0–1
-
+    elv = (elv + 1.0) * 0.5;   // normalize 0–1
+*/
+    //vec3 elevColor = texture2D(elevTexture, vUv).rgb;
+    //float elv = dot(elevColor, vec3(0.299, 0.587, 0.114));//auta ta gkri kratane to 0 for land, only mountain pixels have strong peaks. 
+    float elv = texture2D(elevTexture, vUv).r;
+          
 		vElevation = elv; // pass to fragment shader
-    //map colours
 
-		// displace along the sphere's normal
-		//vec3 displaced = position + normal * (0.05 * elv);
-		vec3 displaced = position + normal * (elevMult * elv);
-    // chatGPT suggested this improvement to the elevation calculation
+
+		vec3 displaced = position + normal * (elevMult * elv); //auto apo to slider 
 		vec4 mvPosition = modelViewMatrix * vec4(displaced, 1.0);
-
-		// backface check
-		vec3 vNormal = normalMatrix * normal;
-		vVisible = step(0.0, dot(-normalize(mvPosition.xyz), normalize(vNormal)));
+		//vec3 vNormal = normalMatrix * normal;
+		//vVisible = step(0.0, dot(-normalize(mvPosition.xyz), normalize(vNormal)));
 
 		gl_PointSize = size;
 		gl_Position = projectionMatrix * mvPosition;
-}`
-//tono
+}`//tono
+
 const fs = `
   uniform sampler2D colorTexture;
+  uniform sampler2D elevTexture;
   uniform float waterLevel;
-  uniform sampler2D waterElevTexture;
+  ///uniform sampler2D waterElevTexture;
 
   varying vec2 vUv;
-  varying float vVisible;
+  //varying float vVisible;
   varying float vElevation;
  
-
-
   void main() {
     vec4 baseColor = texture2D(colorTexture, vUv);
-    
+        if (vElevation < waterLevel) {
+          vec3 waterColor = vec3(0.02, 0.04, 0.12); // dark blue water
+         // float depth = smoothstep(waterLevel, waterLevel - 0.4, vElevation);//07 kati ginetai
+          //vec3 col = mix(waterColor, baseColor.rgb, depth);
+          gl_FragColor = vec4(waterColor, 1.0);
+          return;
+        }
+          
+    gl_FragColor = baseColor;
+
+          /*  float waterMask = texture2D(waterElevTexture, vUv).r;
+          vec3 c = texture2D(waterElevTexture, vUv).rgb;
+          float mask = c.b * 0.6 + c.g * 0.3 + c.r * 0.1;
+
+
+            if (waterMask > waterLevel) {
+              vec3 waterColor = vec3(0.05, 0.02, 0.09);
+              float depth = smoothstep(waterLevel, 1.0, waterMask);
+              vec3 col = mix(waterColor, baseColor.rgb, depth);
+              gl_FragColor = vec4(col, 1.0);
+              return;
+             }*/
+
+/*
     if (vElevation < waterLevel) {
-        vec3 waterColor = vec3(0.55, 0.52, 0.9);
+        vec3 waterColor = vec3(0.05, 0.02, 0.09);
         float depth = smoothstep(waterLevel, waterLevel - 0.15, vElevation);
         vec3 col = mix(waterColor, baseColor.rgb, depth);
         gl_FragColor = vec4(col, 1.0);
         return;
-    }
+    }*/
    
     
-    float shade = mix(0.7, 1.3, vElevation); // valleys darker, mountains lighter
-    shade = clamp(shade, 0.6, 1.4);
+    //float shade = mix(0.7, 1.3, vElevation); // valleys darker, mountains lighter
+    //shade = clamp(shade, 0.6, 1.4);
 
-    vec3 finalColor = baseColor.rgb * shade;
-
-    if (vVisible < 0.5) discard;
-
-    gl_FragColor = vec4(finalColor, baseColor.a);
+   // vec3 finalColor = baseColor.rgb * shade;
+             //  if (vVisible < 0.5) discard;//wtf????????????????????
+   // gl_FragColor = vec4(finalColor, baseColor.a);
 }
 `
- const pointsMat = new THREE.ShaderMaterial({
+
+
+ const pointsMat = new THREE.ShaderMaterial({//auto dimiourgei material
     uniforms: uniforms,
     vertexShader: vs,
     fragmentShader: fs,
-    transparent: true,
+    transparent: false,
+    depthWrite: true,
+depthTest: true
   });
 
 return pointsMat;
@@ -430,26 +404,24 @@ function getFresnelMat({rimHex = 0x0088ff, facingHex = 0x000000} = {}) {
     fresnelScale: { value: 1.0 },
     fresnelPower: { value: 4.0 },
   };
+/*========================the glow/atmosphere sphere.=======================================*/
+  /*----------------------------------------------*/
   const vs = `
   uniform float fresnelBias;
   uniform float fresnelScale;
   uniform float fresnelPower;
-  
   varying float vReflectionFactor;
   
   void main() {
     vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
     vec4 worldPosition = modelMatrix * vec4( position, 1.0 );
-  
     vec3 worldNormal = normalize( mat3( modelMatrix[0].xyz, modelMatrix[1].xyz, modelMatrix[2].xyz ) * normal );
-  
     vec3 I = worldPosition.xyz - cameraPosition;
-  
     vReflectionFactor = fresnelBias + fresnelScale * pow( 1.0 + dot( normalize( I ), worldNormal ), fresnelPower );
-  
     gl_Position = projectionMatrix * mvPosition;
   }
   `;
+  /*--------------------------------------------*/
   const fs = `
   uniform vec3 color1;
   uniform vec3 color2;
@@ -461,6 +433,7 @@ function getFresnelMat({rimHex = 0x0088ff, facingHex = 0x000000} = {}) {
     gl_FragColor = vec4(mix(color2, color1, vec3(f)), f);
   }
   `;
+  /*--------------------------------------------------------------------------------------*/
   const fresnelMat = new THREE.ShaderMaterial({
     uniforms: uniforms,
     vertexShader: vs,
@@ -470,3 +443,5 @@ function getFresnelMat({rimHex = 0x0088ff, facingHex = 0x000000} = {}) {
   });
   return fresnelMat;
 }
+
+/* python -m http.server         */
